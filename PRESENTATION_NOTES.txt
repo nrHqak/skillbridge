@@ -1,0 +1,4 @@
+• Что делает программа: платформа взаимного обмена навыками
+• Классы: User, BasePost (abstract), OfferPost, RequestPost, Review, ChatMessage
+• Алгоритм: поиск пар (A предлагает X ищет Y) ↔ (B предлагает Y и ищет X)
+• Экраны: LoginForm, MainForm (3 вкладки), ProfileForm, ChatForm
