@@ -86,7 +86,7 @@ namespace SkillBridgeApp
             createPostTab.Controls.Add(rbOffer);
             createPostTab.Controls.Add(rbRequest);
 
-            txtWantedSkill = new TextBox { Location = new Point(250, 120), Width = 150, PlaceholderText = "Что ищу взамен (для 'Ищу')", Visible = false };
+            txtWantedSkill = new TextBox { Location = new Point(250, 120), Width = 150,Visible = false };
             createPostTab.Controls.Add(txtWantedSkill);
 
             btnPublish = new Button { Text = "Опубликовать", Location = new Point(10, 200), Width = 150 };
