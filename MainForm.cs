@@ -28,7 +28,6 @@ namespace SkillBridgeApp
         {
             InitializeComponent();
             SetupTheming();
-            DataStore.Initialize(); // Initialize test data
             LoadFeed();
         }
 

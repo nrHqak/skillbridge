@@ -21,13 +21,13 @@ namespace SkillBridgeApp
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.AcceptButton = btnOK;
-            this.CancelButton = btnCancel;
-
             Label lblPrompt = new Label { Text = prompt, AutoSize = true, Location = new Point(10, 10) };
             TextBox txtInput = new TextBox { Name = "txtInput", Location = new Point(10, 40), Width = 260 };
             Button btnOK = new Button { Text = "OK", Location = new Point(100, 80), Width = 70, DialogResult = DialogResult.OK };
             Button btnCancel = new Button { Text = "Отмена", Location = new Point(180, 80), Width = 70, DialogResult = DialogResult.Cancel };
+
+            this.AcceptButton = btnOK;
+            this.CancelButton = btnCancel;
 
             btnOK.Click += (sender, e) => { InputText = txtInput.Text; };
 

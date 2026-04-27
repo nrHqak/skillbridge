@@ -107,17 +107,18 @@ namespace SkillBridgeApp
                 return;
             }
 
-            // Simulate a review dialog
-            string reviewComment = Microsoft.VisualBasic.Interaction.InputBox("Оставьте комментарий к отзыву:", "Оставить отзыв", "");
-            if (string.IsNullOrWhiteSpace(reviewComment))
+            // Use custom InputBoxForm for review comment
+            InputBoxForm commentBox = new InputBoxForm("Оставить отзыв", "Оставьте комментарий к отзыву:");
+            if (commentBox.ShowDialog() != DialogResult.OK || string.IsNullOrWhiteSpace(commentBox.InputText))
             {
                 MessageBox.Show("Комментарий не может быть пустым.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            string reviewComment = commentBox.InputText;
 
-            int stars = 0;
-            string starsInput = Microsoft.VisualBasic.Interaction.InputBox("Поставьте оценку (1-5):".", "Оставить отзыв", "");
-            if (!int.TryParse(starsInput, out stars) || stars < 1 || stars > 5)
+            // Use custom InputBoxForm for stars rating
+            InputBoxForm starsBox = new InputBoxForm("Оставить отзыв", "Поставьте оценку (1-5):");
+            if (starsBox.ShowDialog() != DialogResult.OK || !int.TryParse(starsBox.InputText, out int stars) || stars < 1 || stars > 5)
             {
                 MessageBox.Show("Оценка должна быть числом от 1 до 5.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
