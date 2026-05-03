@@ -9,6 +9,7 @@ namespace SkillBridgeApp
     /// </summary>
     public static class DataStore
     {
+        private static readonly string[] KnownCategories = { "IT", "Арт", "Языки", "Ремонт" };
         public static List<User> Users { get; set; } = new List<User>();
         public static List<BasePost> Posts { get; set; } = new List<BasePost>();
         public static List<Review> Reviews { get; set; } = new List<Review>();
@@ -57,34 +58,106 @@ namespace SkillBridgeApp
         /// <returns>Список пар пользователей, у которых есть взаимные интересы.</returns>
         public static List<(User offeringUser, User requestingUser, OfferPost offer, RequestPost request)> FindMatches(User currentUser)
         {
-            // Алгоритм поиска совпадений
-            var myOffers = Posts.OfType<OfferPost>().Where(p => p.Author == currentUser).ToList();
-            var myRequests = Posts.OfType<RequestPost>().Where(p => p.Author == currentUser).ToList();
+            var myOffers = Posts.OfType<OfferPost>().Where(p => p.Author == currentUser && p.IsActive).ToList();
+            var myRequests = Posts.OfType<RequestPost>().Where(p => p.Author == currentUser && p.IsActive).ToList();
 
             var result = new List<(User, User, OfferPost, RequestPost)>();
+            var uniquePairs = new HashSet<string>();
 
             foreach (var myOffer in myOffers)
             {
                 foreach (var myRequest in myRequests)
                 {
-                    // Найти других пользователей, которые предлагают то, что ищет текущий пользователь (myRequest.WantedSkill)
-                    // И ищут то, что предлагает текущий пользователь (myOffer.Category)
+                    // Совпадение: мой offer-категория = категория запроса другого пользователя,
+                    // а категория моего запроса = категория offer другого пользователя.
                     var potentialMatches = Posts.OfType<OfferPost>()
-                        .Where(p => p.Author != currentUser && p.Category == myRequest.WantedSkill)
-                        .Join(Posts.OfType<RequestPost>(),
-                              offer => offer.Author,
-                              request => request.Author,
-                              (offer, request) => new { Offer = offer, Request = request })
-                        .Where(m => m.Request.WantedSkill == myOffer.Category && m.Offer.Category == myRequest.WantedSkill)
+                        .Where(otherOffer => otherOffer.Author != currentUser && otherOffer.IsActive)
+                        .Join(
+                            Posts.OfType<RequestPost>().Where(otherRequest => otherRequest.Author != currentUser && otherRequest.IsActive),
+                            offer => offer.Author,
+                            request => request.Author,
+                            (offer, request) => new { Offer = offer, Request = request })
+                        .Where(x =>
+                            IsCategoryMatch(x.Request.Category, myOffer.Category, x.Request.WantedSkill) &&
+                            IsCategoryMatch(x.Offer.Category, myRequest.Category, myRequest.WantedSkill))
                         .ToList();
 
                     foreach (var match in potentialMatches)
                     {
-                        result.Add((currentUser, match.Offer.Author, myOffer, match.Request));
+                        string key = $"{currentUser.Id}:{myOffer.Id}:{myRequest.Id}:{match.Offer.Author.Id}:{match.Offer.Id}:{match.Request.Id}";
+                        if (uniquePairs.Add(key))
+                        {
+                            result.Add((currentUser, match.Offer.Author, myOffer, match.Request));
+                        }
                     }
                 }
             }
+
             return result;
+        }
+
+        public static List<string> FindSimpleMatches(User currentUser)
+        {
+            var myRequests = Posts.OfType<RequestPost>().Where(p => p.Author == currentUser && p.IsActive).ToList();
+            var myOffers = Posts.OfType<OfferPost>().Where(p => p.Author == currentUser && p.IsActive).ToList();
+            var suggestions = new List<string>();
+
+            foreach (var myRequest in myRequests)
+            {
+                var offers = Posts.OfType<OfferPost>()
+                    .Where(p => p.Author != currentUser && p.IsActive)
+                    .Where(p => IsCategoryMatch(p.Category, myRequest.Category, myRequest.WantedSkill))
+                    .Take(5);
+
+                suggestions.AddRange(offers.Select(o =>
+                    $"Запрос: вам нужен '{myRequest.Category}'. Подходит: {o.Author.Name} — {o.GetDisplayText()}"));
+            }
+
+            foreach (var myOffer in myOffers)
+            {
+                var requests = Posts.OfType<RequestPost>()
+                    .Where(p => p.Author != currentUser && p.IsActive)
+                    .Where(p => IsCategoryMatch(p.Category, myOffer.Category, p.WantedSkill))
+                    .Take(5);
+
+                suggestions.AddRange(requests.Select(r =>
+                    $"Предложение: вы даёте '{myOffer.Category}'. Кому нужно: {r.Author.Name} — {r.GetDisplayText()}"));
+            }
+
+            return suggestions.Distinct().ToList();
+        }
+
+        private static bool IsCategoryMatch(string sourceCategory, string targetCategory, string additionalText)
+        {
+            if (string.Equals(sourceCategory, targetCategory, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            string inferred = InferCategory(additionalText);
+            return !string.IsNullOrEmpty(inferred) &&
+                   string.Equals(inferred, targetCategory, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static string InferCategory(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return string.Empty;
+            }
+
+            string normalized = text.ToLowerInvariant();
+
+            if (normalized.Contains("c#") || normalized.Contains("sql") || normalized.Contains("python") || normalized.Contains("linux") || normalized.Contains("it"))
+                return "IT";
+            if (normalized.Contains("рис") || normalized.Contains("арт") || normalized.Contains("акварел") || normalized.Contains("портрет"))
+                return "Арт";
+            if (normalized.Contains("англ") || normalized.Contains("франц") || normalized.Contains("язык"))
+                return "Языки";
+            if (normalized.Contains("ремонт") || normalized.Contains("велосипед"))
+                return "Ремонт";
+
+            return KnownCategories.FirstOrDefault(c => normalized.Contains(c.ToLowerInvariant())) ?? string.Empty;
         }
     }
 }
