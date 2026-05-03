@@ -23,6 +23,7 @@ namespace SkillBridgeApp
         private Button btnFindMatches;
         private ListBox lbMatches;
         private Label lblMatchCount;
+        private Button btnOpenChat;
 
         public MainForm()
         {
@@ -41,10 +42,12 @@ namespace SkillBridgeApp
             TabPage feedTab = new TabPage("Лента") { Name = "feedTab" };
             TabPage createPostTab = new TabPage("Создать объявление") { Name = "createPostTab" };
             TabPage matchesTab = new TabPage("Совпадения") { Name = "matchesTab" };
+            TabPage chatTab = new TabPage("Чат") { Name = "chatTab" };
 
             tabControl.Controls.Add(feedTab);
             tabControl.Controls.Add(createPostTab);
             tabControl.Controls.Add(matchesTab);
+            tabControl.Controls.Add(chatTab);
 
             this.Controls.Add(tabControl);
 
@@ -70,6 +73,10 @@ namespace SkillBridgeApp
             btnRespond = new Button { Text = "Откликнуться", Location = new Point(380, 10), Width = 100 };
             btnRespond.Click += BtnRespond_Click;
             feedTab.Controls.Add(btnRespond);
+
+            btnOpenChat = new Button { Text = "Открыть чат", Location = new Point(490, 10), Width = 110 };
+            btnOpenChat.Click += (sender, e) => OpenChat();
+            feedTab.Controls.Add(btnOpenChat);
 
             // Create Post Tab
             txtPostDescription = new TextBox { Location = new Point(10, 10), Width = 300, Height = 100, Multiline = true };
@@ -103,6 +110,18 @@ namespace SkillBridgeApp
 
             lbMatches = new ListBox { Location = new Point(10, 40), Width = 700, Height = 400 };
             matchesTab.Controls.Add(lbMatches);
+
+            Label lblChatInfo = new Label
+            {
+                Text = "Откройте чат и выберите собеседника из списка.",
+                Location = new Point(10, 20),
+                AutoSize = true
+            };
+            chatTab.Controls.Add(lblChatInfo);
+
+            Button btnOpenChatFromTab = new Button { Text = "Перейти в чат", Location = new Point(10, 55), Width = 180 };
+            btnOpenChatFromTab.Click += (sender, e) => OpenChat();
+            chatTab.Controls.Add(btnOpenChatFromTab);
         }
 
         private void SetupTheming()
@@ -222,6 +241,18 @@ namespace SkillBridgeApp
             }
         }
 
+        private void OpenChat()
+        {
+            if (DataStore.CurrentUser == null)
+            {
+                MessageBox.Show("Для доступа к чату необходимо войти в систему.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            ChatForm chatForm = new ChatForm(DataStore.CurrentUser);
+            chatForm.ShowDialog();
+        }
+
         private void BtnPublish_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtPostDescription.Text))
@@ -278,7 +309,11 @@ namespace SkillBridgeApp
             {
                 foreach (var match in matches)
                 {
-                    lbMatches.Items.Add($"{match.offeringUser.Name} предлагает {match.offer.Category} и ищет {match.request.WantedSkill} <-> {match.requestingUser.Name} предлагает {match.request.WantedSkill} и ищет {match.offer.Category}");
+                    lbMatches.Items.Add(
+                        $"{match.offeringUser.Name} предлагает '{match.offer.Category}', " +
+                        $"а {match.requestingUser.Name} ищет '{match.offer.Category}'. " +
+                        $"{match.requestingUser.Name} предлагает '{match.request.Category}', " +
+                        $"а {match.offeringUser.Name} ищет '{match.request.Category}'.");
                 }
             }
             else

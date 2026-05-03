@@ -57,33 +57,41 @@ namespace SkillBridgeApp
         /// <returns>Список пар пользователей, у которых есть взаимные интересы.</returns>
         public static List<(User offeringUser, User requestingUser, OfferPost offer, RequestPost request)> FindMatches(User currentUser)
         {
-            // Алгоритм поиска совпадений
-            var myOffers = Posts.OfType<OfferPost>().Where(p => p.Author == currentUser).ToList();
-            var myRequests = Posts.OfType<RequestPost>().Where(p => p.Author == currentUser).ToList();
+            var myOffers = Posts.OfType<OfferPost>().Where(p => p.Author == currentUser && p.IsActive).ToList();
+            var myRequests = Posts.OfType<RequestPost>().Where(p => p.Author == currentUser && p.IsActive).ToList();
 
             var result = new List<(User, User, OfferPost, RequestPost)>();
+            var uniquePairs = new HashSet<string>();
 
             foreach (var myOffer in myOffers)
             {
                 foreach (var myRequest in myRequests)
                 {
-                    // Найти других пользователей, которые предлагают то, что ищет текущий пользователь (myRequest.WantedSkill)
-                    // И ищут то, что предлагает текущий пользователь (myOffer.Category)
+                    // Совпадение: мой offer-категория = категория запроса другого пользователя,
+                    // а категория моего запроса = категория offer другого пользователя.
                     var potentialMatches = Posts.OfType<OfferPost>()
-                        .Where(p => p.Author != currentUser && p.Category == myRequest.WantedSkill)
-                        .Join(Posts.OfType<RequestPost>(),
-                              offer => offer.Author,
-                              request => request.Author,
-                              (offer, request) => new { Offer = offer, Request = request })
-                        .Where(m => m.Request.WantedSkill == myOffer.Category && m.Offer.Category == myRequest.WantedSkill)
+                        .Where(otherOffer => otherOffer.Author != currentUser && otherOffer.IsActive)
+                        .Join(
+                            Posts.OfType<RequestPost>().Where(otherRequest => otherRequest.Author != currentUser && otherRequest.IsActive),
+                            offer => offer.Author,
+                            request => request.Author,
+                            (offer, request) => new { Offer = offer, Request = request })
+                        .Where(x =>
+                            string.Equals(x.Request.Category, myOffer.Category, StringComparison.OrdinalIgnoreCase) &&
+                            string.Equals(x.Offer.Category, myRequest.Category, StringComparison.OrdinalIgnoreCase))
                         .ToList();
 
                     foreach (var match in potentialMatches)
                     {
-                        result.Add((currentUser, match.Offer.Author, myOffer, match.Request));
+                        string key = $"{currentUser.Id}:{myOffer.Id}:{myRequest.Id}:{match.Offer.Author.Id}:{match.Offer.Id}:{match.Request.Id}";
+                        if (uniquePairs.Add(key))
+                        {
+                            result.Add((currentUser, match.Offer.Author, myOffer, match.Request));
+                        }
                     }
                 }
             }
+
             return result;
         }
     }
