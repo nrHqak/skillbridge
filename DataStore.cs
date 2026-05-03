@@ -96,6 +96,37 @@ namespace SkillBridgeApp
             return result;
         }
 
+        public static List<string> FindSimpleMatches(User currentUser)
+        {
+            var myRequests = Posts.OfType<RequestPost>().Where(p => p.Author == currentUser && p.IsActive).ToList();
+            var myOffers = Posts.OfType<OfferPost>().Where(p => p.Author == currentUser && p.IsActive).ToList();
+            var suggestions = new List<string>();
+
+            foreach (var myRequest in myRequests)
+            {
+                var offers = Posts.OfType<OfferPost>()
+                    .Where(p => p.Author != currentUser && p.IsActive)
+                    .Where(p => IsCategoryMatch(p.Category, myRequest.Category, myRequest.WantedSkill))
+                    .Take(5);
+
+                suggestions.AddRange(offers.Select(o =>
+                    $"Запрос: вам нужен '{myRequest.Category}'. Подходит: {o.Author.Name} — {o.GetDisplayText()}"));
+            }
+
+            foreach (var myOffer in myOffers)
+            {
+                var requests = Posts.OfType<RequestPost>()
+                    .Where(p => p.Author != currentUser && p.IsActive)
+                    .Where(p => IsCategoryMatch(p.Category, myOffer.Category, p.WantedSkill))
+                    .Take(5);
+
+                suggestions.AddRange(requests.Select(r =>
+                    $"Предложение: вы даёте '{myOffer.Category}'. Кому нужно: {r.Author.Name} — {r.GetDisplayText()}"));
+            }
+
+            return suggestions.Distinct().ToList();
+        }
+
         private static bool IsCategoryMatch(string sourceCategory, string targetCategory, string additionalText)
         {
             if (string.Equals(sourceCategory, targetCategory, StringComparison.OrdinalIgnoreCase))
