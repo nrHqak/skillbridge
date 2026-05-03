@@ -79,7 +79,16 @@ namespace SkillBridgeApp
             feedTab.Controls.Add(btnOpenChat);
 
             // Create Post Tab
-            txtPostDescription = new TextBox { Location = new Point(10, 10), Width = 300, Height = 100, Multiline = true };
+            Label lblPostDescription = new Label { Text = "Описание навыка:", Location = new Point(10, 10), AutoSize = true };
+            createPostTab.Controls.Add(lblPostDescription);
+
+            Label lblPostCategory = new Label { Text = "Категория:", Location = new Point(10, 115), AutoSize = true };
+            createPostTab.Controls.Add(lblPostCategory);
+
+            Label lblWantedSkill = new Label { Text = "Что хотите взамен:", Location = new Point(250, 115), AutoSize = true, Visible = false };
+            createPostTab.Controls.Add(lblWantedSkill);
+
+            txtPostDescription = new TextBox { Location = new Point(10, 30), Width = 300, Height = 80, Multiline = true };
             createPostTab.Controls.Add(txtPostDescription);
 
             cmbPostCategory = new ComboBox { Location = new Point(10, 120), Width = 150, DropDownStyle = ComboBoxStyle.DropDownList };
@@ -89,7 +98,11 @@ namespace SkillBridgeApp
 
             rbOffer = new RadioButton { Text = "Предлагаю", Location = new Point(10, 160), Checked = true };
             rbRequest = new RadioButton { Text = "Ищу", Location = new Point(120, 160) };
-            rbRequest.CheckedChanged += (sender, e) => txtWantedSkill.Visible = rbRequest.Checked;
+            rbRequest.CheckedChanged += (sender, e) =>
+            {
+                txtWantedSkill.Visible = rbRequest.Checked;
+                lblWantedSkill.Visible = rbRequest.Checked;
+            };
             createPostTab.Controls.Add(rbOffer);
             createPostTab.Controls.Add(rbRequest);
 
