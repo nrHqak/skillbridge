@@ -9,6 +9,7 @@ namespace SkillBridgeApp
     /// </summary>
     public static class DataStore
     {
+        private static readonly string[] KnownCategories = { "IT", "Арт", "Языки", "Ремонт" };
         public static List<User> Users { get; set; } = new List<User>();
         public static List<BasePost> Posts { get; set; } = new List<BasePost>();
         public static List<Review> Reviews { get; set; } = new List<Review>();
@@ -77,8 +78,8 @@ namespace SkillBridgeApp
                             request => request.Author,
                             (offer, request) => new { Offer = offer, Request = request })
                         .Where(x =>
-                            string.Equals(x.Request.Category, myOffer.Category, StringComparison.OrdinalIgnoreCase) &&
-                            string.Equals(x.Offer.Category, myRequest.Category, StringComparison.OrdinalIgnoreCase))
+                            IsCategoryMatch(x.Request.Category, myOffer.Category, x.Request.WantedSkill) &&
+                            IsCategoryMatch(x.Offer.Category, myRequest.Category, myRequest.WantedSkill))
                         .ToList();
 
                     foreach (var match in potentialMatches)
@@ -93,6 +94,39 @@ namespace SkillBridgeApp
             }
 
             return result;
+        }
+
+        private static bool IsCategoryMatch(string sourceCategory, string targetCategory, string additionalText)
+        {
+            if (string.Equals(sourceCategory, targetCategory, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            string inferred = InferCategory(additionalText);
+            return !string.IsNullOrEmpty(inferred) &&
+                   string.Equals(inferred, targetCategory, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static string InferCategory(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return string.Empty;
+            }
+
+            string normalized = text.ToLowerInvariant();
+
+            if (normalized.Contains("c#") || normalized.Contains("sql") || normalized.Contains("python") || normalized.Contains("linux") || normalized.Contains("it"))
+                return "IT";
+            if (normalized.Contains("рис") || normalized.Contains("арт") || normalized.Contains("акварел") || normalized.Contains("портрет"))
+                return "Арт";
+            if (normalized.Contains("англ") || normalized.Contains("франц") || normalized.Contains("язык"))
+                return "Языки";
+            if (normalized.Contains("ремонт") || normalized.Contains("велосипед"))
+                return "Ремонт";
+
+            return KnownCategories.FirstOrDefault(c => normalized.Contains(c.ToLowerInvariant())) ?? string.Empty;
         }
     }
 }
