@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillBridge — Презентация</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a12;
+    --bg2: #0f0f1c;
+    --bg3: #13132a;
+    --card: #141428;
+    --border: rgba(124,58,237,0.18);
+    --border2: rgba(124,58,237,0.35);
+    --purple: #7c3aed;
+    --purple2: #9d5ef0;
+    --purple3: #c084fc;
+    --blue: #3b82f6;
+    --cyan: #06b6d4;
+    --green: #10b981;
+    --amber: #f59e0b;
+    --text: #e8e8f0;
+    --muted: #8888aa;
+    --dim: #4a4a6a;
+    --code-bg: #0d0d1e;
+    --radius: 16px;
+    --radius-sm: 8px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* ===== PARTICLES BG ===== */
+  #particles {
+    position: fixed; inset:0; z-index:0;
+    pointer-events: none;
+  }
+
+  /* ===== SLIDE CONTAINER ===== */
+  .slides {
+    position: fixed; inset:0; z-index:1;
+  }
+
+  .slide {
+    position: absolute; inset:0;
+    display: flex; align-items: center; justify-content: center;
+    padding: 40px 80px;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: opacity 0.5s cubic-bezier(.4,0,.2,1), transform 0.5s cubic-bezier(.4,0,.2,1);
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .slide.active {
+    opacity: 1; transform: translateX(0);
+    pointer-events: all;
+  }
+  .slide.exit-left {
+    opacity: 0; transform: translateX(-60px);
+  }
+
+  .slide-inner {
+    width: 100%; max-width: 1100px;
+    position: relative; z-index: 2;
+  }
+
+  /* ===== GLOW BG BLOBS ===== */
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.12;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ===== NAVIGATION ===== */
+  nav {
+    position: fixed; bottom: 36px; left:50%; transform:translateX(-50%);
+    z-index:100;
+    display: flex; align-items: center; gap: 16px;
+    background: rgba(20,20,40,0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 10px 20px;
+  }
+
+  .nav-btn {
+    width:36px; height:36px; border-radius:50%;
+    background: transparent;
+    border: 1px solid var(--border2);
+    color: var(--purple3);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex; align-items:center; justify-content:center;
+    transition: all 0.2s;
+  }
+  .nav-btn:hover { background: var(--purple); border-color: var(--purple); color:#fff; }
+
+  #slide-counter {
+    font-size: 13px; color: var(--muted);
+    min-width: 60px; text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .dots {
+    display: flex; gap: 6px; align-items: center;
+  }
+  .dot {
+    width:6px; height:6px; border-radius:50%;
+    background: var(--dim);
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .dot.active { background: var(--purple); width:20px; border-radius:3px; }
+
+  /* ===== SLIDE NUMBER TAG ===== */
+  .slide-tag {
+    position: absolute; top: 30px; right: 0;
+    font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--purple3); opacity:0.6;
+    font-weight: 500;
+  }
+
+  /* ===== TYPOGRAPHY ===== */
+  .eyebrow {
+    font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--purple3); font-weight: 600; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .eyebrow::before {
+    content:''; display:inline-block;
+    width:20px; height:2px; background: var(--purple);
+    border-radius:1px;
+  }
+
+  h1.title {
+    font-size: clamp(48px,5.5vw,80px);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 20px;
+  }
+  h1.title .accent { color: var(--purple3); }
+
+  h2.slide-title {
+    font-size: clamp(28px,3.5vw,48px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin-bottom: 8px;
+  }
+  h2.slide-title .acc { color: var(--purple3); }
+
+  .subtitle {
+    font-size: 16px; color: var(--muted);
+    line-height: 1.7; max-width: 600px;
+    margin-bottom: 28px;
+  }
+
+  /* ===== CARDS ===== */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: var(--border2); }
+
+  .card-grid {
+    display: grid;
+    gap: 14px;
+  }
+
+  /* ===== CODE BLOCK ===== */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid rgba(124,58,237,0.2);
+    border-radius: var(--radius-sm);
+    padding: 16px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-x: auto;
+    position: relative;
+  }
+  .code-block .lang-tag {
+    position: absolute; top: 8px; right: 12px;
+    font-size: 10px; color: var(--purple3);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .kw  { color: #c084fc; }
+  .cls { color: #67e8f9; }
+  .str { color: #86efac; }
+  .cmt { color: #4a4a7a; font-style: italic; }
+  .num { color: #fbbf24; }
+  .fn  { color: #93c5fd; }
+  .op  { color: #f0abfc; }
+
+  /* ===== BADGE ===== */
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 600;
+    padding: 4px 10px; border-radius: 20px;
+    letter-spacing: 0.05em; text-transform: uppercase;
+  }
+  .badge-purple { background: rgba(124,58,237,0.2); color: var(--purple3); border: 1px solid rgba(124,58,237,0.3); }
+  .badge-blue   { background: rgba(59,130,246,0.15); color: #93c5fd; border: 1px solid rgba(59,130,246,0.25); }
+  .badge-green  { background: rgba(16,185,129,0.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.25); }
+  .badge-amber  { background: rgba(245,158,11,0.15); color: #fcd34d; border: 1px solid rgba(245,158,11,0.25); }
+
+  /* ===== SCORE BAR ===== */
+  .score-row {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 14px; margin-bottom: 8px;
+  }
+  .score-label { flex:1; color: var(--muted); }
+  .score-bar-wrap { flex:2; height:6px; background: var(--bg3); border-radius:3px; overflow:hidden; }
+  .score-bar { height:100%; border-radius:3px; background: linear-gradient(90deg, var(--purple), var(--purple3)); }
+  .score-num { width:40px; text-align:right; font-weight:600; color: var(--purple3); font-size:13px; }
+
+  /* ===== PILL LIST ===== */
+  .pill-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .pill {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 20px; padding: 5px 14px;
+    font-size: 13px; color: var(--muted);
+  }
+
+  /* ===== FLOWCHART ===== */
+  #flowchart-svg {
+    width:100%; border-radius: var(--radius);
+    overflow: visible;
+  }
+
+  /* ===== TABLE ===== */
+  .stbl {
+    width:100%; border-collapse:collapse; font-size:13px;
+  }
+  .stbl th {
+    text-align:left; padding: 10px 14px;
+    background: rgba(124,58,237,0.12);
+    color: var(--purple3); font-weight:600;
+    font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+    border-bottom: 1px solid var(--border2);
+  }
+  .stbl td {
+    padding: 9px 14px; color: var(--muted);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .stbl td:first-child { color: var(--text); font-weight:500; }
+  .stbl tr:last-child td { border:none; }
+  .stbl tr:hover td { background: rgba(124,58,237,0.04); }
+
+  /* ===== TWO-COL ===== */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+  /* ===== ICON BOX ===== */
+  .icon-box {
+    width:40px; height:40px; border-radius:10px;
+    background: rgba(124,58,237,0.15);
+    border: 1px solid var(--border2);
+    display: flex; align-items:center; justify-content:center;
+    font-size:18px; margin-bottom:10px;
+    flex-shrink:0;
+  }
+  .icon-box.blue { background:rgba(59,130,246,0.15); border-color:rgba(59,130,246,0.3); }
+  .icon-box.green{ background:rgba(16,185,129,0.15); border-color:rgba(16,185,129,0.3); }
+  .icon-box.amber{ background:rgba(245,158,11,0.15); border-color:rgba(245,158,11,0.3); }
+  .icon-box.cyan { background:rgba(6,182,212,0.15);  border-color:rgba(6,182,212,0.3); }
+
+  /* ===== DIVIDER LINE ===== */
+  .vdiv { width:1px; background: var(--border); align-self:stretch; }
+
+  /* ===== HEADER ROW ===== */
+  .hrow { display:flex; align-items:flex-start; gap:16px; margin-bottom:20px; }
+
+  /* ===== ANIMS ===== */
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes pulse { 0%,100%{opacity:0.6} 50%{opacity:1} }
+  @keyframes scanline { from{top:-2px} to{top:100%} }
+
+  .slide.active .slide-inner > * {
+    animation: fadeUp 0.4s both;
+  }
+  .slide.active .slide-inner > *:nth-child(1){animation-delay:.05s}
+  .slide.active .slide-inner > *:nth-child(2){animation-delay:.12s}
+  .slide.active .slide-inner > *:nth-child(3){animation-delay:.19s}
+  .slide.active .slide-inner > *:nth-child(4){animation-delay:.25s}
+  .slide.active .slide-inner > *:nth-child(5){animation-delay:.31s}
+  .slide.active .slide-inner > *:nth-child(6){animation-delay:.36s}
+
+  /* ===== KEYBOARD HINT ===== */
+  .kbd-hint {
+    position: fixed; bottom: 95px; right:40px;
+    font-size:11px; color: var(--dim);
+    display:flex; gap:6px; align-items:center;
+    z-index:99;
+  }
+  kbd {
+    background: var(--card); border:1px solid var(--border);
+    border-radius:4px; padding:2px 6px;
+    font-family:'Space Grotesk'; font-size:11px;
+    color: var(--muted);
+  }
+
+  /* Progress bar */
+  #progress {
+    position:fixed; top:0; left:0; height:2px;
+    background: linear-gradient(90deg, var(--purple),var(--cyan));
+    z-index:200; transition: width 0.4s;
+  }
+
+  /* Neon line separator */
+  .neon-sep {
+    height:1px;
+    background: linear-gradient(90deg, transparent, var(--purple), transparent);
+    margin: 16px 0;
+    opacity:0.5;
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<canvas id="particles"></canvas>
+
+<div class="slides" id="slides">
+
+  <!-- ===== SLIDE 0: TITLE ===== -->
+  <div class="slide active" id="s0">
+    <div class="blob" style="width:600px;height:600px;background:#7c3aed;top:-200px;left:-200px;"></div>
+    <div class="blob" style="width:400px;height:400px;background:#06b6d4;bottom:-100px;right:-100px;"></div>
+    <div class="slide-inner" style="text-align:center;">
+      <div class="eyebrow" style="justify-content:center;">Дипломный проект · C# WinForms</div>
+      <h1 class="title">Skill<span class="accent">Bridge</span></h1>
+      <p class="subtitle" style="max-width:500px;margin:0 auto 32px;">
+        Платформа взаимного обмена навыками внутри сообщества
+      </p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <span class="badge badge-purple">C# .NET 6+</span>
+        <span class="badge badge-blue">WinForms</span>
+        <span class="badge badge-green">ООП</span>
+        <span class="badge badge-amber">Алгоритм</span>
+      </div>
+      <div style="margin-top:48px;display:flex;gap:40px;justify-content:center;">
+        <div style="text-align:center;">
+          <div style="font-size:32px;font-weight:700;color:var(--purple3)">7</div>
+          <div style="font-size:12px;color:var(--muted)">классов</div>
+        </div>
+        <div class="vdiv"></div>
+        <div style="text-align:center;">
+          <div style="font-size:32px;font-weight:700;color:var(--cyan)">5</div>
+          <div style="font-size:12px;color:var(--muted)">форм</div>
+        </div>
+        <div class="vdiv"></div>
+        <div style="text-align:center;">
+          <div style="font-size:32px;font-weight:700;color:var(--green)">30</div>
+          <div style="font-size:12px;color:var(--muted)">макс. баллов</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-tag">01 / 10</div>
+  </div>
+
+  <!-- ===== SLIDE 1: ЦЕЛЬ ===== -->
+  <div class="slide" id="s1">
+    <div class="blob" style="width:500px;height:500px;background:#7c3aed;top:-150px;right:-150px;"></div>
+    <div class="slide-inner">
+      <div class="eyebrow">Постановка задачи</div>
+      <h2 class="slide-title">Цель <span class="acc">проекта</span></h2>
+      <p class="subtitle">Создать настольное приложение для обмена навыками без денег — «ты учишь меня, я учу тебя»</p>
+
+      <div class="card-grid" style="grid-template-columns:1fr 1fr;">
+        <div class="card">
+          <div class="icon-box">🎯</div>
+          <div style="font-weight:600;margin-bottom:6px;">Что делает приложение</div>
+          <div class="pill-list">
+            <span class="pill">Регистрация / Вход</span>
+            <span class="pill">Лента объявлений</span>
+            <span class="pill">Публикация навыков</span>
+            <span class="pill">Алгоритм совпадений</span>
+            <span class="pill">Встроенный чат</span>
+            <span class="pill">Рейтинги и отзывы</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="icon-box blue">📥</div>
+          <div style="font-weight:600;margin-bottom:10px;">Входные / выходные данные</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.9;">
+            <div><span style="color:var(--purple3);font-weight:600;">Вход:</span> имя, email, описание навыка, категория, оценка (1–5)</div>
+            <div style="margin-top:6px;"><span style="color:var(--green);font-weight:600;">Выход:</span> лента объявлений, список совпадений, история чата, профиль с рейтингом</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <div style="display:flex;gap:24px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:180px;">
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Стек</div>
+            <div style="font-weight:600;">C# / .NET 6+ / WinForms</div>
+          </div>
+          <div class="vdiv"></div>
+          <div style="flex:1;min-width:180px;">
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Платформа</div>
+            <div style="font-weight:600;">Windows Desktop</div>
+          </div>
+          <div class="vdiv"></div>
+          <div style="flex:1;min-width:180px;">
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Хранилище</div>
+            <div style="font-weight:600;">In-Memory DataStore</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-tag">02 / 10</div>
+  </div>
+
+  <!-- ===== SLIDE 2: ООП ===== -->
+  <div class="slide" id="s2">
+    <div class="blob" style="width:450px;height:450px;background:#06b6d4;bottom:-200px;left:-150px;"></div>
+    <div class="slide-inner">
+      <div class="eyebrow">Объектно-ориентированное программирование</div>
+      <h2 class="slide-title">Архитектура <span class="acc">классов</span></h2>
+
+      <div class="two-col" style="gap:16px;">
+        <div>
+          <!-- Inheritance tree -->
+          <div class="card" style="margin-bottom:14px;">
+            <div style="font-size:12px;color:var(--purple3);font-weight:600;margin-bottom:12px;text-transform:uppercase;letter-spacing:.1em;">Иерархия наследования</div>
+            <div style="font-family:'JetBrains Mono';font-size:13px;line-height:2.1;">
+              <div style="color:var(--cyan);">abstract <span style="color:var(--purple3)">BasePost</span></div>
+              <div style="padding-left:20px;color:var(--muted);">├── <span style="color:var(--green)">OfferPost</span> <span style="color:var(--dim)">&nbsp;&nbsp;// Предлагаю</span></div>
+              <div style="padding-left:20px;color:var(--muted);">└── <span style="color:var(--amber)">RequestPost</span> <span style="color:var(--dim)">&nbsp;// Ищу</span></div>
+              <div style="margin-top:8px;color:var(--blue)">class <span style="color:var(--purple3)">User</span></div>
+              <div style="color:var(--blue)">class <span style="color:var(--purple3)">Review</span></div>
+              <div style="color:var(--blue)">class <span style="color:var(--purple3)">ChatMessage</span></div>
+              <div style="color:var(--muted)">static <span style="color:var(--purple3)">DataStore</span></div>
+            </div>
+          </div>
+
+          <div class="code-block" style="font-size:12px;">
+            <div class="lang-tag">C#</div>
+<span class="kw">public abstract class</span> <span class="cls">BasePost</span>
+{
+  <span class="kw">public</span> <span class="cls">int</span> Id { <span class="kw">get</span>; <span class="kw">set</span>; }
+  <span class="kw">public</span> <span class="cls">User</span> Author { <span class="kw">get</span>; <span class="kw">set</span>; }
+  <span class="kw">public abstract string</span> <span class="fn">GetDisplayText</span>();
+}
+<span class="cmt">// Полиморфизм ↓</span>
+<span class="kw">public class</span> <span class="cls">OfferPost</span> : <span class="cls">BasePost</span>
+{
+  <span class="kw">public override string</span> <span class="fn">GetDisplayText</span>()
+    => <span class="str">$"[ПРЕДЛАГАЮ] {Category}"</span>;
+}</div>
+        </div>
+
+        <div>
+          <div style="display:grid;gap:10px;">
+            <div class="card" style="border-left:3px solid var(--purple);">
+              <div style="font-weight:600;font-size:14px;margin-bottom:4px;">Наследование</div>
+              <div style="font-size:13px;color:var(--muted);">OfferPost и RequestPost наследуют BasePost — общие поля Id, Author, Category, CreatedAt, IsActive</div>
+            </div>
+            <div class="card" style="border-left:3px solid var(--cyan);">
+              <div style="font-weight:600;font-size:14px;margin-bottom:4px;">Инкапсуляция</div>
+              <div style="font-size:13px;color:var(--muted);">Все поля — публичные свойства (get; set;). Логика DataStore скрыта в статических методах</div>
+            </div>
+            <div class="card" style="border-left:3px solid var(--green);">
+              <div style="font-weight:600;font-size:14px;margin-bottom:4px;">Полиморфизм</div>
+              <div style="font-size:13px;color:var(--muted);">abstract GetDisplayText() — разный вывод для OfferPost и RequestPost без проверки типа</div>
+            </div>
+            <div class="card" style="border-left:3px solid var(--amber);">
+              <div style="font-weight:600;font-size:14px;margin-bottom:4px;">Минимум 2 класса-наследника</div>
+              <div style="font-size:13px;color:var(--muted);">OfferPost + RequestPost → критерий выполнен ✓</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-tag">03 / 10</div>
+  </div>
+
+  <!-- ===== SLIDE 3: КОМПОНЕНТЫ ФОРМ ===== -->
+  <div class="slide" id="s3">
+    <div class="blob" style="width:400px;height:400px;background:#10b981;top:-100px;right:-100px;"></div>
+    <div class="slide-inner">
+      <div class="eyebrow">Windows Forms</div>
+      <h2 class="slide-title">Компоненты <span class="acc">интерфейса</span></h2>
+
+      <div class="two-col">
+        <div>
+          <table class="stbl">
+            <thead>
+              <tr><th>Компонент</th><th>Форма</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>TextBox</td><td>LoginForm, MainForm, ChatForm, InputBoxForm</td></tr>
+              <tr><td>Button</td><td>Все формы (Войти, Опубликовать, Отправить...)</td></tr>
+              <tr><td>Label</td><td>Все формы — подписи и заголовки</td></tr>
+              <tr><td>ComboBox</td><td>MainForm (фильтр), ChatForm (собеседник)</td></tr>
+              <tr><td>RadioButton</td><td>LoginForm (вход/рег.), MainForm (тип объявления)</td></tr>
+              <tr><td>ListView</td><td>MainForm — лента объявлений (5 колонок)</td></tr>
+              <tr><td>ListBox</td><td>MainForm (совпадения), ChatForm, ProfileForm</td></tr>
+              <tr><td>TabControl</td><td>MainForm — 5 вкладок навигации</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <div class="code-block" style="font-size:12px;margin-bottom:14px;">
+            <div class="lang-tag">C# · MainForm</div>
+<span class="cmt">// ListView — лента объявлений</span>
+<span class="cls">lvFeed</span> = <span class="kw">new</span> <span class="fn">ListView</span> {
+  View = <span class="cls">View</span>.Details,
+  FullRowSelect = <span class="kw">true</span>
+};
+<span class="cls">lvFeed</span>.<span class="fn">Columns.Add</span>(<span class="str">"Тип"</span>, <span class="num">80</span>);
+<span class="cls">lvFeed</span>.<span class="fn">Columns.Add</span>(<span class="str">"Категория"</span>, <span class="num">100</span>);
+<span class="cls">lvFeed</span>.<span class="fn">Columns.Add</span>(<span class="str">"Описание"</span>, <span class="num">250</span>);
+<span class="cls">lvFeed</span>.<span class="fn">Columns.Add</span>(<span class="str">"Автор"</span>, <span class="num">100</span>);
+<span class="cls">lvFeed</span>.<span class="fn">Columns.Add</span>(<span class="str">"Рейтинг"</span>, <span class="num">80</span>);</div>
+
+          <div class="card">
+            <div style="font-size:12px;color:var(--purple3);font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em;">Тёмная тема</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);">
+                <div style="width:14px;height:14px;border-radius:3px;background:#1a1a2e;border:1px solid var(--border)"></div> #1a1a2e фон
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);">
+                <div style="width:14px;height:14px;border-radius:3px;background:#7c3aed"></div> #7c3aed кнопки
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);">
+                <div style="width:14px;height:14px;border-radius:3px;background:#0f3460;border:1px solid var(--border)"></div> #0f3460 поля
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);">
+                <div style="width:14px;height:14px;border-radius:3px;background:#f59e0b"></div> #f59e0b рейтинг
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-tag">04 / 10</div>
+  </div>
+
+  <!-- ===== SLIDE 4: УСЛОВИЯ И ЛОГИКА ===== -->
+  <div class="slide" id="s4">
+    <div class="blob" style="width:400px;height:400px;background:#f59e0b;top:-100px;left:-150px;opacity:0.08;"></div>
+    <div class="slide-inner">
+      <div class="eyebrow">Применение условий и логики</div>
+      <h2 class="slide-title">Валидация <span class="acc">&amp;&amp; логика</span></h2>
+
+      <div class="two-col">
+        <div>
+          <div class="code-block" style="font-size:12px;margin-bottom:14px;">
+            <div class="lang-tag">C# · LoginForm</div>
+<span class="cmt">// Логические операторы &&, ||</span>
+<span class="kw">if</span> (<span class="fn">string.IsNullOrWhiteSpace</span>(name)
+    <span class="op">||</span> <span class="fn">string.IsNullOrWhiteSpace</span>(email))
+{
+  <span class="cls">MessageBox</span>.<span class="fn">Show</span>(<span class="str">"Поля пустые"</span>);
+  <span class="kw">return</span>;
+}
+<span class="cmt">// && - оба условия должны быть true</span>
+<span class="cls">LoggedInUser</span> = <span class="cls">DataStore</span>.Users
+  .<span class="fn">Find</span>(u => u.Name <span class="op">==</span> name
+             <span class="op">&&</span> u.Email <span class="op">==</span> email);</div>
+
+          <div class="code-block" style="font-size:12px;">
+            <div class="lang-tag">C# · ProfileForm</div>
+<span class="cmt">// Условие + ! (отрицание)</span>
+<span class="kw">if</span> (<span class="cls">DataStore</span>.CurrentUser <span class="op">==</span> _user)
+{
+  <span class="cls">MessageBox</span>.<span class="fn">Show</span>(<span class="str">"Нельзя себе"</span>);
+  <span class="kw">return</span>;
+}
+<span class="cmt">// TryParse + && + || — 3 оператора</span>
+<span class="kw">if</span> (<span class="op">!</span><span class="cls">int</span>.<span class="fn">TryParse</span>(input, <span class="kw">out int</span> stars)
+    <span class="op">||</span> stars <span class="op">&lt;</span> <span class="num">1</span> <span class="op">||</span> stars <span class="op">&gt;</span> <span class="num">5</span>)
+{
+  <span class="cls">MessageBox</span>.<span class="fn">Show</span>(<span class="str">"Оценка 1–5"</span>);
+}</div>
+        </div>
+
+        <div>
+          <div class="card" style="margin-bottom:10px;">
+            <div style="font-size:12px;color:var(--purple3);font-weight:600;margin-bottom:10px;text-transform:uppercase;letter-spacing:.08em;">Логика ленты (LoadFeed)</div>
+            <div class="code-block" style="font-size:12px;">
+<span class="kw">var</span> posts = <span class="cls">DataStore</span>.Posts.<span class="fn">AsEnumerable</span>();
+
+<span class="cmt">// Фильтр по категории</span>
+<span class="kw">if</span> (category <span class="op">!=</span> <span class="str">"Все"</span>)
+  posts = posts.<span class="fn">Where</span>(p =>
+    p.Category <span class="op">==</span> category);
+
+<span class="cmt">// Поиск по тексту</span>
+<span class="kw">if</span> (<span class="op">!</span><span class="fn">string.IsNullOrWhiteSpace</span>(term))
+  posts = posts.<span class="fn">Where</span>(p =>
+    p.Description.<span class="fn">ToLower</span>()
+      .<span class="fn">Contains</span>(term));
+
+posts = posts.<span class="fn">OrderByDescending</span>(
+  p => p.CreatedAt);</div>
+          </div>
+
+          <div class="card">
+            <div style="font-size:12px;color:var(--green);font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em;">Динамический UI</div>
+            <div style="font-size:13px;color:var(--muted);line-height:1.8;">
+              Поле «Что хотите взамен» появляется только при выборе RadioButton «Ищу»:<br>
+              <code style="font-family:'JetBrains Mono';font-size:12px;color:var(--cyan)">txtWantedSkill.Visible = rbRequest.Checked;</code>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-tag">05 / 10</div>
+  </div>
+
+  <!-- ===== SLIDE 5: ТИПЫ ДАННЫХ ===== -->
+  <div class="slide" id="s5">
+    <div class="blob" style="width:400px;height:400px;background:#3b82f6;bottom:-150px;right:-100px;opacity:0.1;"></div>
+    <div class="slide-inner">
+      <div class="eyebrow">Работа с типами данных</div>
+      <h2 class="slide-title">Типы, <span class="acc">Convert</span> &amp; ToString</h2>
+
+      <div class="two-col">
+        <div>
+          <div class="card" style="margin-bottom:14px;">
+            <div style="font-size:12px;color:var(--purple3);font-weight:600;margin-bottom:10px;text-transform:uppercase;letter-spacing:.08em;">Используемые типы</div>
+            <table class="stbl" style="font-size:12px;">
+              <thead><tr><th>Тип</th><th>Где</th></tr></thead>
+              <tbody>
+                <tr><td>int</td><td>User.Id, BasePost.Id, Review.Stars</td></tr>
+                <tr><td>double</td><td>User.Rating (4.5, 3.8…)</td></tr>
+                <tr><td>string</td><td>Name, Email, Category, Description</td></tr>
+                <tr><td>bool</td><td>BasePost.IsActive, RadioButton.Checked</td></tr>
+                <tr><td>DateTime</td><td>BasePost.CreatedAt, ChatMessage.Time</td></tr>
+                <tr><td>List&lt;T&gt;</td><td>DataStore.Users, Posts, Reviews, ChatMessages</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div>
+          <div class="code-block" style="font-size:12px;margin-bottom:14px;">
+            <div class="lang-tag">C# — преобразования</div>
+<span class="cmt">// ToString с форматом</span>
+post.Author.Rating.<span class="fn">ToString</span>(<span class="str">"F1"</span>)
+<span class="cmt">// → "4.5" (1 знак после запятой)</span>
+
+<span class="cmt">// Convert (через LINQ Max)</span>
+<span class="kw">int</span> newId = <span class="cls">DataStore</span>.Posts
+  .<span class="fn">Max</span>(p => p.Id) <span class="op">+</span> <span class="num">1</span>;
+
+<span class="cmt">// TryParse — безопасно!</span>
+<span class="kw">if</span> (<span class="cls">int</span>.<span class="fn">TryParse</span>(input,
+      <span class="kw">out int</span> stars)) { ... }
+
+<span class="cmt">// OfType<T> — фильтр по типу</span>
+<span class="cls">Posts</span>.<span class="fn">OfType</span>&lt;<span class="cls">OfferPost</span>&gt;()
+  .<span class="fn">Where</span>(p => p.IsActive)
+
+<span class="cmt">// ColorTranslator.FromHtml</span>
+<span class="cls">ColorTranslator</span>.<span class="fn">FromHtml</span>(<span class="str">"#7c3aed"</span>)</div>
+
+          <div class="card">
+            <div style="font-size:12px;color:var(--amber);font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em;">Почему TryParse, а не Convert?</div>
+            <div style="font-size:13px;color:var(--muted);">Convert.ToInt32("abc") → <span style="color:#f87171">FormatException</span><br>
+            int.TryParse("abc") → <span style="color:var(--green)">false</span>, программа не падает ✓</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-tag">06 / 10</div>
+  </div>
+
+  <!-- ===== SLIDE 6: БЛОК-СХЕМА ===== -->
+  <div class="slide" id="s6">
+    <div class="blob" style="width:500px;height:500px;background:#7c3aed;top:-200px;right:-200px;opacity:0.1;"></div>
+    <div class="slide-inner">
+      <div class="eyebrow">Алгоритм</div>
+      <h2 class="slide-title">Блок-схема <span class="acc">FindMatches</span></h2>
+
+      <div class="two-col" style="align-items:start;">
+        <div>
+          <svg id="flowchart-svg" viewBox="0 0 340 560" xmlns="http://www.w3.org/2000/svg" style="max-height:440px;">
+            <defs>
+              <marker id="arr2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M2 1L8 5L2 9" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </marker>
+            </defs>
+
+            <!-- START -->
+            <rect x="95" y="10" width="150" height="36" rx="18" fill="rgba(124,58,237,0.25)" stroke="#7c3aed" stroke-width="1"/>
+            <text x="170" y="33" text-anchor="middle" fill="#c084fc" font-family="Space Grotesk" font-size="13" font-weight="600">НАЧАЛО</text>
+
+            <!-- Arrow -->
+            <line x1="170" y1="46" x2="170" y2="64" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+            <!-- BOX 1 -->
+            <rect x="50" y="66" width="240" height="40" rx="8" fill="rgba(15,15,30,0.8)" stroke="rgba(124,58,237,0.4)" stroke-width="1"/>
+            <text x="170" y="82" text-anchor="middle" fill="#e8e8f0" font-family="Space Grotesk" font-size="12">Загрузить myOffers</text>
+            <text x="170" y="97" text-anchor="middle" fill="#8888aa" font-family="Space Grotesk" font-size="11">(активные OfferPost пользователя)</text>
+
+            <line x1="170" y1="106" x2="170" y2="124" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+            <!-- BOX 2 -->
+            <rect x="50" y="126" width="240" height="40" rx="8" fill="rgba(15,15,30,0.8)" stroke="rgba(124,58,237,0.4)" stroke-width="1"/>
+            <text x="170" y="142" text-anchor="middle" fill="#e8e8f0" font-family="Space Grotesk" font-size="12">Загрузить myRequests</text>
+            <text x="170" y="157" text-anchor="middle" fill="#8888aa" font-family="Space Grotesk" font-size="11">(активные RequestPost пользователя)</text>
+
+            <line x1="170" y1="166" x2="170" y2="184" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+            <!-- BOX 3 loop -->
+            <rect x="50" y="186" width="240" height="36" rx="8" fill="rgba(6,182,212,0.12)" stroke="rgba(6,182,212,0.4)" stroke-width="1"/>
+            <text x="170" y="209" text-anchor="middle" fill="#67e8f9" font-family="Space Grotesk" font-size="12">Для каждой пары (myOffer, myRequest)</text>
+
+            <line x1="170" y1="222" x2="170" y2="240" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+            <!-- DIAMOND 1 -->
+            <polygon points="170,242 310,272 170,302 30,272" fill="rgba(124,58,237,0.18)" stroke="#9d5ef0" stroke-width="1"/>
+            <text x="170" y="268" text-anchor="middle" fill="#c084fc" font-family="Space Grotesk" font-size="11" font-weight="600">IsCategoryMatch</text>
+            <text x="170" y="282" text-anchor="middle" fill="#8888aa" font-family="Space Grotesk" font-size="10">(другой offer ↔ myRequest)?</text>
+
+            <!-- Yes -->
+            <line x1="170" y1="302" x2="170" y2="318" stroke="#10b981" stroke-width="1.5" marker-end="url(#arr2)"/>
+            <text x="176" y="312" fill="#6ee7b7" font-family="Space Grotesk" font-size="10">Да</text>
+
+            <!-- No arrow right -->
+            <line x1="310" y1="272" x2="330" y2="272" stroke="#f87171" stroke-width="1.5"/>
+            <line x1="330" y1="272" x2="330" y2="420" stroke="#f87171" stroke-width="1.5"/>
+            <text x="316" y="268" fill="#f87171" font-family="Space Grotesk" font-size="10">Нет</text>
+
+            <!-- DIAMOND 2 -->
+            <polygon points="170,320 310,350 170,380 30,350" fill="rgba(16,185,129,0.12)" stroke="#10b981" stroke-width="1"/>
+            <text x="170" y="346" text-anchor="middle" fill="#6ee7b7" font-family="Space Grotesk" font-size="11" font-weight="600">uniquePairs.Add</text>
+            <text x="170" y="360" text-anchor="middle" fill="#8888aa" font-family="Space Grotesk" font-size="10">(не дубликат)?</text>
+
+            <line x1="170" y1="380" x2="170" y2="398" stroke="#10b981" stroke-width="1.5" marker-end="url(#arr2)"/>
+            <text x="176" y="391" fill="#6ee7b7" font-family="Space Grotesk" font-size="10">Да</text>
+
+            <!-- No2 -->
+            <line x1="30" y1="350" x2="10" y2="350" stroke="#f87171" stroke-width="1.5"/>
+            <line x1="10" y1="350" x2="10" y2="420" stroke="#f87171" stroke-width="1.5"/>
+            <text x="14" y="346" fill="#f87171" font-family="Space Grotesk" font-size="10">Нет</text>
+
+            <!-- BOX result -->
+            <rect x="50" y="400" width="240" height="36" rx="8" fill="rgba(16,185,129,0.15)" stroke="rgba(16,185,129,0.4)" stroke-width="1"/>
+            <text x="170" y="422" text-anchor="middle" fill="#6ee7b7" font-family="Space Grotesk" font-size="12">result.Add(пара пользователей)</text>
+
+            <!-- No arrows join -->
+            <line x1="330" y1="420" x2="290" y2="420" stroke="#f87171" stroke-width="1"/>
+            <line x1="10" y1="420" x2="50" y2="420" stroke="#f87171" stroke-width="1"/>
+
+            <line x1="170" y1="436" x2="170" y2="454" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+            <!-- END -->
+            <rect x="95" y="456" width="150" height="36" rx="18" fill="rgba(124,58,237,0.25)" stroke="#7c3aed" stroke-width="1"/>
+            <text x="170" y="479" text-anchor="middle" fill="#c084fc" font-family="Space Grotesk" font-size="13" font-weight="600">Вернуть result</text>
+          </svg>
+        </div>
+
+        <div>
+          <div class="code-block" style="font-size:11.5px;margin-bottom:14px;">
+            <div class="lang-tag">C# · DataStore</div>
+<span class="kw">public static</span> <span class="cls">List</span>&lt;(User, User, <span class="cls">OfferPost</span>, <span class="cls">RequestPost</span>)&gt;
+  <span class="fn">FindMatches</span>(<span class="cls">User</span> currentUser)
+{
+  <span class="kw">var</span> myOffers = <span class="cls">Posts</span>
+    .<span class="fn">OfType</span>&lt;<span class="cls">OfferPost</span>&gt;()
+    .<span class="fn">Where</span>(p => p.Author <span class="op">==</span> currentUser
+              <span class="op">&&</span> p.IsActive).<span class="fn">ToList</span>();
+
+  <span class="kw">var</span> result = <span class="kw">new</span> <span class="cls">List</span>&lt;(...)&gt;();
+  <span class="kw">var</span> seen = <span class="kw">new</span> <span class="cls">HashSet</span>&lt;<span class="kw">string</span>&gt;();
+
+  <span class="kw">foreach</span> (<span class="kw">var</span> offer <span class="kw">in</span> myOffers)
+    <span class="kw">foreach</span> (<span class="kw">var</span> req <span class="kw">in</span> myRequests)
+    {
+      <span class="cmt">// Найти взаимную пару</span>
+      <span class="kw">var</span> matches = <span class="cls">Posts</span>
+        .<span class="fn">OfType</span>&lt;<span class="cls">OfferPost</span>&gt;()
+        .<span class="fn">Where</span>(o => o.Author <span class="op">!=</span> user)
+        .<span class="fn">Join</span>(...) <span class="cmt">// связать через автора</span>
+        .<span class="fn">Where</span>(x =>
+          <span class="fn">IsCategoryMatch</span>(x.Request, offer)
+          <span class="op">&&</span> <span class="fn">IsCategoryMatch</span>(x.Offer, req));
+    }
+  <span class="kw">return</span> result;
+}</div>
+
+          <div class="card" style="background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.25);">
+            <div style="font-size:12px;color:var(--green);font-weight:600;margin-bottom:8px;">Пример взаимной пары</div>
+            <div style="font-size:13px;line-height:1.9;color:var(--muted);">
+              <div><span style="color:var(--purple3)">Алексей</span> → предлагает <span style="color:var(--cyan)">IT</span>, ищет <span style="color:var(--amber)">Арт</span></div>
+              <div><span style="color:var(--purple3)">Даша</span> → предлагает <span style="color:var(--amber)">Арт</span>, ищет <span style="color:var(--cyan)">IT</span></div>
+              <div style="margin-top:4px;color:var(--green);font-weight:600;">✓ Взаимное совпадение найдено!</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-tag">07 / 10</div>
+  </div>
+
+  <!-- ===== SLIDE 7: РАБОТОСПОСОБНОСТЬ ===== -->
+  <div class="slide" id="s7">
+    <div class="blob" style="width:400px;height:400px;background:#10b981;bottom:-150px;left:-100px;opacity:0.09;"></div>
+    <div class="slide-inner">
+      <div class="eyebrow">Работоспособность программы</div>
+      <h2 class="slide-title">Запуск <span class="acc">без ошибок</span></h2>
+
+      <div class="two-col">
+        <div>
+          <div class="code-block" style="font-size:12px;margin-bottom:14px;">
+            <div class="lang-tag">C# · Program.cs</div>
+<span class="kw">static void</span> <span class="fn">Main</span>()
+{
+  <span class="cls">Application</span>.<span class="fn">EnableVisualStyles</span>();
+  <span class="cmt">// 1. Загрузить тестовые данные</span>
+  <span class="cls">DataStore</span>.<span class="fn">Initialize</span>();
+
+  <span class="kw">var</span> login = <span class="kw">new</span> <span class="fn">LoginForm</span>();
+  <span class="cmt">// 2. Показать форму входа</span>
+  <span class="kw">if</span> (login.<span class="fn">ShowDialog</span>()
+      <span class="op">==</span> <span class="cls">DialogResult</span>.OK)
+  {
+    <span class="cmt">// 3. Запустить главную форму</span>
+    <span class="cls">Application</span>.<span class="fn">Run</span>(
+      <span class="kw">new</span> <span class="fn">MainForm</span>());
+  }
+  <span class="kw">else</span> { <span class="cls">Application</span>.<span class="fn">Exit</span>(); }
+}</div>
+
+          <div class="card" style="background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.25);">
+            <div style="font-size:12px;color:var(--green);font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em;">Тестовый вход</div>
+            <div style="font-family:'JetBrains Mono';font-size:13px;color:var(--text);">
+              Имя: <span style="color:var(--cyan)">Алексей</span><br>
+              Email: <span style="color:var(--cyan)">alexey@example.com</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card" style="margin-bottom:12px;">
+            <div style="font-size:12px;color:var(--purple3);font-weight:600;margin-bottom:10px;text-transform:uppercase;letter-spacing:.08em;">Тестовые данные (DataStore.Initialize)</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div style="text-align:center;padding:10px;background:var(--bg3);border-radius:8px;">
+                <div style="font-size:24px;font-weight:700;color:var(--purple3)">5</div>
+                <div style="font-size:11px;color:var(--muted)">пользователей</div>
+              </div>
+              <div style="text-align:center;padding:10px;background:var(--bg3);border-radius:8px;">
+                <div style="font-size:24px;font-weight:700;color:var(--cyan)">9</div>
+                <div style="font-size:11px;color:var(--muted)">объявлений</div>
+              </div>
+              <div style="text-align:center;padding:10px;background:var(--bg3);border-radius:8px;">
+                <div style="font-size:24px;font-weight:700;color:var(--green)">2</div>
+                <div style="font-size:11px;color:var(--muted)">сообщения в чате</div>
+              </div>
+              <div style="text-align:center;padding:10px;background:var(--bg3);border-radius:8px;">
+                <div style="font-size:24px;font-weight:700;color:var(--amber)">4</div>
+                <div style="font-size:11px;color:var(--muted)">категории</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div style="font-size:12px;color:var(--amber);font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em;">Обработка ошибок ввода</div>
+            <div style="font-size:13px;color:var(--muted);line-height:1.9;">
+              <div>✓ Пустые поля → MessageBox.Warning</div>
+              <div>✓ Email уже существует → MessageBox.Error</div>
+              <div>✓ Отклик на своё объявление → блокировка</div>
+              <div>✓ Отзыв самому себе → блокировка</div>
+              <div>✓ Неверная оценка (не 1–5) → предупреждение</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-tag">08 / 10</div>
+  </div>
+
+  <!-- ===== SLIDE 8: ОФОРМЛЕНИЕ UX ===== -->
+  <div class="slide" id="s8">
+    <div class="blob" style="width:400px;height:400px;background:#7c3aed;top:-100px;right:-100px;opacity:0.12;"></div>
+    <div class="slide-inner">
+      <div class="eyebrow">Оформление и UX</div>
+      <h2 class="slide-title">Дизайн <span class="acc">приложения</span></h2>
+
+      <div class="two-col">
+        <div>
+          <!-- Mockup window -->
+          <div style="background:#0f0f1e;border:1px solid rgba(124,58,237,0.3);border-radius:12px;overflow:hidden;">
+            <!-- Titlebar -->
+            <div style="background:#1a1a2e;padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(124,58,237,0.15);">
+              <div style="width:10px;height:10px;border-radius:50%;background:#f87171;"></div>
+              <div style="width:10px;height:10px;border-radius:50%;background:#fbbf24;"></div>
+              <div style="width:10px;height:10px;border-radius:50%;background:#34d399;"></div>
+              <div style="flex:1;text-align:center;font-size:11px;color:#4a4a6a;">SkillBridge - Платформа обмена навыками</div>
+            </div>
+            <!-- Tabs -->
+            <div style="background:#1a1a2e;display:flex;border-bottom:1px solid rgba(124,58,237,0.15);">
+              <div style="padding:7px 14px;font-size:11px;color:#7c3aed;border-bottom:2px solid #7c3aed;">Лента</div>
+              <div style="padding:7px 14px;font-size:11px;color:#4a4a6a;">Создать</div>
+              <div style="padding:7px 14px;font-size:11px;color:#4a4a6a;">Совпадения</div>
+              <div style="padding:7px 14px;font-size:11px;color:#4a4a6a;">Чат</div>
+              <div style="padding:7px 14px;font-size:11px;color:#4a4a6a;">Профиль</div>
+            </div>
+            <!-- Filter bar -->
+            <div style="background:#0f0f1e;padding:8px 12px;display:flex;gap:8px;align-items:center;">
+              <div style="background:#0f3460;border:1px solid rgba(124,58,237,0.2);border-radius:4px;padding:4px 10px;font-size:11px;color:#8888aa;min-width:80px;">Все ▾</div>
+              <div style="background:#0f3460;border:1px solid rgba(124,58,237,0.2);border-radius:4px;padding:4px 10px;font-size:11px;color:#4a4a6a;flex:1;">Поиск...</div>
+              <div style="background:#7c3aed;border-radius:6px;padding:4px 10px;font-size:11px;color:#fff;">Откликнуться</div>
+            </div>
+            <!-- List -->
+            <div style="padding:4px 0;">
+              <div style="padding:8px 12px;display:flex;gap:10px;align-items:center;border-bottom:1px solid rgba(255,255,255,0.04);">
+                <span style="font-size:10px;background:rgba(16,185,129,0.15);color:#6ee7b7;padding:2px 6px;border-radius:4px;font-weight:600;">ПРЕДЛАГАЮ</span>
+                <span style="font-size:10px;color:#4a4a6a;">IT</span>
+                <span style="font-size:11px;color:#8888aa;flex:1;">[ПРЕДЛАГАЮ] IT: Уроки Python...</span>
+                <span style="font-size:11px;color:#e8e8f0;">Алексей</span>
+                <span style="font-size:11px;color:#f59e0b;">4.5★</span>
+              </div>
+              <div style="padding:8px 12px;display:flex;gap:10px;align-items:center;border-bottom:1px solid rgba(255,255,255,0.04);background:rgba(124,58,237,0.06);">
+                <span style="font-size:10px;background:rgba(59,130,246,0.15);color:#93c5fd;padding:2px 6px;border-radius:4px;font-weight:600;">ИЩУ</span>
+                <span style="font-size:10px;color:#4a4a6a;">IT</span>
+                <span style="font-size:11px;color:#8888aa;flex:1;">[ИЩУ] IT: Ищу того, кто научит C#...</span>
+                <span style="font-size:11px;color:#e8e8f0;">Даша</span>
+                <span style="font-size:11px;color:#f59e0b;">3.8★</span>
+              </div>
+              <div style="padding:8px 12px;display:flex;gap:10px;align-items:center;">
+                <span style="font-size:10px;background:rgba(16,185,129,0.15);color:#6ee7b7;padding:2px 6px;border-radius:4px;font-weight:600;">ПРЕДЛАГАЮ</span>
+                <span style="font-size:10px;color:#4a4a6a;">Языки</span>
+                <span style="font-size:11px;color:#8888aa;flex:1;">[ПРЕДЛАГАЮ] Языки: Английский...</span>
+                <span style="font-size:11px;color:#e8e8f0;">Алина</span>
+                <span style="font-size:11px;color:#f59e0b;">4.2★</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card" style="margin-bottom:12px;">
+            <div style="font-size:12px;color:var(--purple3);font-weight:600;margin-bottom:10px;text-transform:uppercase;letter-spacing:.08em;">Цветовая схема</div>
+            <div style="display:flex;flex-direction:column;gap:7px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:32px;height:16px;border-radius:4px;background:#1a1a2e;border:1px solid var(--border);flex-shrink:0;"></div>
+                <div style="font-family:'JetBrains Mono';font-size:12px;color:var(--muted);">#1a1a2e <span style="color:var(--dim)">— фон</span></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:32px;height:16px;border-radius:4px;background:#7c3aed;flex-shrink:0;"></div>
+                <div style="font-family:'JetBrains Mono';font-size:12px;color:var(--muted);">#7c3aed <span style="color:var(--dim)">— кнопки</span></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:32px;height:16px;border-radius:4px;background:#0f3460;border:1px solid var(--border);flex-shrink:0;"></div>
+                <div style="font-family:'JetBrains Mono';font-size:12px;color:var(--muted);">#0f3460 <span style="color:var(--dim)">— поля ввода</span></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:32px;height:16px;border-radius:4px;background:#e2e8f0;flex-shrink:0;"></div>
+                <div style="font-family:'JetBrains Mono';font-size:12px;color:var(--muted);">#e2e8f0 <span style="color:var(--dim)">— текст</span></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:32px;height:16px;border-radius:4px;background:#f59e0b;flex-shrink:0;"></div>
+                <div style="font-family:'JetBrains Mono';font-size:12px;color:var(--muted);">#f59e0b <span style="color:var(--dim)">— рейтинг ★</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div style="font-size:12px;color:var(--green);font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em;">UX решения</div>
+            <div style="font-size:13px;color:var(--muted);line-height:1.9;">
+              <div>✓ TabControl — навигация по 5 разделам</div>
+              <div>✓ Скруглённые кнопки (GraphicsPath)</div>
+              <div>✓ Динамическое поле WantedSkill</div>
+              <div>✓ Единый SetupTheming() во всех формах</div>
+              <div>✓ InputBoxForm — переиспользуемый диалог</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-tag">09 / 10</div>
+  </div>
+
+  <!-- ===== SLIDE 9: ИТОГИ ===== -->
+  <div class="slide" id="s9">
+    <div class="blob" style="width:600px;height:600px;background:#7c3aed;bottom:-300px;right:-200px;opacity:0.12;"></div>
+    <div class="slide-inner">
+      <div class="eyebrow">Итоги</div>
+      <h2 class="slide-title">Критерии <span class="acc">оценки</span></h2>
+
+      <div class="two-col" style="align-items:start;">
+        <div>
+          <div class="card" style="margin-bottom:14px;">
+            <div style="font-size:12px;color:var(--purple3);font-weight:600;margin-bottom:14px;text-transform:uppercase;letter-spacing:.08em;">Баллы по критериям</div>
+            <div class="score-row">
+              <div class="score-label">Постановка задачи</div>
+              <div class="score-bar-wrap"><div class="score-bar" style="width:100%"></div></div>
+              <div class="score-num">2/2</div>
+            </div>
+            <div class="score-row">
+              <div class="score-label">Использование ООП</div>
+              <div class="score-bar-wrap"><div class="score-bar" style="width:100%"></div></div>
+              <div class="score-num">4/4</div>
+            </div>
+            <div class="score-row">
+              <div class="score-label">Компоненты форм</div>
+              <div class="score-bar-wrap"><div class="score-bar" style="width:100%"></div></div>
+              <div class="score-num">2/2</div>
+            </div>
+            <div class="score-row">
+              <div class="score-label">Условия и логика</div>
+              <div class="score-bar-wrap"><div class="score-bar" style="width:100%"></div></div>
+              <div class="score-num">4/4</div>
+            </div>
+            <div class="score-row">
+              <div class="score-label">Работа с типами</div>
+              <div class="score-bar-wrap"><div class="score-bar" style="width:100%"></div></div>
+              <div class="score-num">2/2</div>
+            </div>
+            <div class="score-row">
+              <div class="score-label">Алгоритм / блок-схема</div>
+              <div class="score-bar-wrap"><div class="score-bar" style="width:100%"></div></div>
+              <div class="score-num">2/2</div>
+            </div>
+            <div class="score-row">
+              <div class="score-label">Работоспособность</div>
+              <div class="score-bar-wrap"><div class="score-bar" style="width:100%"></div></div>
+              <div class="score-num">4/4</div>
+            </div>
+            <div class="score-row">
+              <div class="score-label">Оформление и UX</div>
+              <div class="score-bar-wrap"><div class="score-bar" style="width:100%"></div></div>
+              <div class="score-num">5/5</div>
+            </div>
+            <div class="score-row">
+              <div class="score-label">Документация</div>
+              <div class="score-bar-wrap"><div class="score-bar" style="width:100%"></div></div>
+              <div class="score-num">5/5</div>
+            </div>
+            <div class="neon-sep"></div>
+            <div class="score-row" style="margin-bottom:0;">
+              <div class="score-label" style="font-weight:700;color:var(--text);">ИТОГО</div>
+              <div class="score-bar-wrap"><div class="score-bar" style="width:100%;background:linear-gradient(90deg,var(--purple),var(--cyan),var(--green))"></div></div>
+              <div class="score-num" style="font-size:16px;color:var(--cyan)">30/30</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card" style="margin-bottom:12px;background:rgba(124,58,237,0.1);border-color:rgba(124,58,237,0.35);">
+            <div style="font-size:14px;font-weight:600;margin-bottom:12px;color:var(--purple3);">Ключевые достижения</div>
+            <div style="font-size:13px;color:var(--muted);line-height:2;">
+              <div>🏗 Абстрактный класс BasePost + 2 наследника</div>
+              <div>🔀 Алгоритм FindMatches + нечёткий IsCategoryMatch</div>
+              <div>💬 Полноценный чат с историей сообщений</div>
+              <div>⭐ Система рейтингов и отзывов</div>
+              <div>🎨 Единая тёмная тема во всех 5 формах</div>
+              <div>🛡 Валидация всего пользовательского ввода</div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div style="text-align:center;padding:16px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+              <div style="font-size:36px;font-weight:700;color:var(--purple3);line-height:1.1;">7</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:4px;">классов</div>
+            </div>
+            <div style="text-align:center;padding:16px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+              <div style="font-size:36px;font-weight:700;color:var(--cyan);line-height:1.1;">5</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:4px;">форм</div>
+            </div>
+            <div style="text-align:center;padding:16px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+              <div style="font-size:36px;font-weight:700;color:var(--green);line-height:1.1;">13</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:4px;">файлов</div>
+            </div>
+            <div style="text-align:center;padding:16px;background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.4);border-radius:12px;">
+              <div style="font-size:36px;font-weight:700;color:var(--purple3);line-height:1.1;">30</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:4px;">баллов</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-tag">10 / 10</div>
+  </div>
+
+</div><!-- /slides -->
+
+<!-- Navigation -->
+<nav>
+  <button class="nav-btn" id="btn-prev">&#8592;</button>
+  <div class="dots" id="dots"></div>
+  <span id="slide-counter">1 / 10</span>
+  <button class="nav-btn" id="btn-next">&#8594;</button>
+</nav>
+
+<div class="kbd-hint">
+  <kbd>←</kbd><kbd>→</kbd> навигация &nbsp; <kbd>F</kbd> полный экран
+</div>
+
+<script>
+const TOTAL = 10;
+let current = 0;
+
+const slidesEl = document.querySelectorAll('.slide');
+const dotsEl   = document.getElementById('dots');
+const counter  = document.getElementById('slide-counter');
+const progress = document.getElementById('progress');
+
+// Build dots
+for(let i=0;i<TOTAL;i++){
+  const d = document.createElement('div');
+  d.className = 'dot' + (i===0?' active':'');
+  d.onclick = () => goTo(i);
+  dotsEl.appendChild(d);
+}
+
+function goTo(n, dir = 1) {
+  if(n<0 || n>=TOTAL || n===current) return;
+  slidesEl[current].classList.remove('active');
+  slidesEl[current].classList.add(dir > 0 ? 'exit-left' : 'exit-right');
+  setTimeout(() => slidesEl[current-dir].classList.remove('exit-left','exit-right'), 500);
+  current = n;
+  slidesEl[current].classList.add('active');
+  // dots
+  document.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('active', i===current));
+  counter.textContent = (current+1) + ' / ' + TOTAL;
+  progress.style.width = ((current/(TOTAL-1))*100)+'%';
+}
+
+document.getElementById('btn-next').onclick = () => goTo(current+1, 1);
+document.getElementById('btn-prev').onclick = () => goTo(current-1, -1);
+
+document.addEventListener('keydown', e => {
+  if(e.key==='ArrowRight'||e.key==='ArrowDown') goTo(current+1,1);
+  if(e.key==='ArrowLeft' ||e.key==='ArrowUp')   goTo(current-1,-1);
+  if(e.key==='f'||e.key==='F') document.documentElement.requestFullscreen?.();
+});
+
+// Init progress
+progress.style.width = '0%';
+
+// ===== PARTICLES =====
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [];
+
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x  = Math.random() * W;
+    this.y  = Math.random() * H;
+    this.vx = (Math.random()-.5)*0.3;
+    this.vy = (Math.random()-.5)*0.3;
+    this.r  = Math.random()*1.5+0.5;
+    this.alpha = Math.random()*0.4+0.1;
+    this.color = Math.random() > 0.5 ? '124,58,237' : '6,182,212';
+  }
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    if(this.x<0||this.x>W||this.y<0||this.y>H) this.reset();
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+    ctx.fillStyle = `rgba(${this.color},${this.alpha})`;
+    ctx.fill();
+  }
+}
+
+for(let i=0;i<120;i++) particles.push(new Particle());
+
+(function loop() {
+  ctx.clearRect(0,0,W,H);
+  particles.forEach(p => { p.update(); p.draw(); });
+  // Draw lines between close particles
+  for(let i=0;i<particles.length;i++) {
+    for(let j=i+1;j<particles.length;j++) {
+      const dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<100) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x,particles[i].y);
+        ctx.lineTo(particles[j].x,particles[j].y);
+        ctx.strokeStyle=`rgba(124,58,237,${0.12*(1-dist/100)})`;
+        ctx.lineWidth=0.5;
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
